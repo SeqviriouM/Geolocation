@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <title>Геолокация</title>
+
+    <style>
+      body {
+        background-color: #8B00FF;
+        margin-top:200px;
+      }
+
+      .left {
+        background-color: white;
+        float:left;
+        position:relative;
+        left:50%;
+      }
+
+      .right {
+        background-color: white;
+        position:relative;
+        right:50%;
+      }
+
+      .middle {
+        background-color: white;
+        margin: 0 auto;
+        width: 500px;
+
+      } 
+
+      .form {
+        padding:20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .next {
+        float:right;
+        margin-right: 20px;
+      }
+
+    </style>
+
+
+  </head>
+
+  <body>
+
+    <div class="middle">
+        
+        <form class="form">
+          <div class="form-group">
+            <label>Заполните следующие поля</label>
+          </div>
+          <div class="form-group">
+            <label>От: </label>
+            <input type="text" name="from" id="from" placeholder="Введите место отправления" size=25>
+          </div>
+          <div class="form-group">
+            <label>До: </label>
+            <input type="text" name="to" id="to" placeholder="Введите место отправления" size=25>
+          </div>
+          <div class="form-group">
+            <label>Вид транспорта: </label>
+            <input type="text" placeholder="Введите место отправления" size=25>
+          </div>
+          <div class="form-group">
+            <input type="button" value="Ввести еще данные" onclick="save()">
+            <input type="button" value="Далее" class="next" onclick="next()" >
+          </div>
+        </form>
+    
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+    <script>
+    
+    var data=[]; // Содержит всю введенную информацию по маршруту
+
+    // Функция сохранения текущей карточки и подготовка к вводу новой
+    function save() {
+      var from = document.getElementById("from").value; // Получение точки отправления
+      var to = document.getElementById("to").value; // Получение точки прибытия
+      var trip = {}; // Содержит текущий отрезок
+      var result_check; // Содержит результат проверки
+
+      trip["from"] = from;
+      trip["to"] = to;
+      
+      data.push(trip); // Добавление к информации по маршруту введенного отрезка
+
+      document.getElementById("from").value="";
+      document.getElementById("to").value="";
+
+    }
+
+    function next() {
+      
+      var kol_gorod = {}; // Содержит кол-во встречаемости каждого города.
+      var begin; // Начало маршрута
+      var end; // Конец маршрута
+      // Определения кол-ва встречаемости городов. Каждый город должен быть упомянут дважды: как пункт отправления и как пункт прибытия, за исключения начального города и конечного города. 
+      for (var i in data) {
+        if (typeof kol_gorod[data[i].to] === "undefined") {
+          kol_gorod[data[i].to] = 1;
+        } else {
+          kol_gorod[data[i].to]++;
+        }
+
+        if (typeof kol_gorod[data[i].from] === "undefined") {
+          kol_gorod[data[i].from] = 1;
+        } else {
+          kol_gorod[data[i].from]++;
+        } 
+      }
+      
+      var result_check = check_route(kol_gorod);
+
+      if(!check_route(kol_gorod)) {
+        alert("Введенный маршрут некорректен. Попробуйте ввести данные заново.");
+        return false;
+      }
+
+      data.forEach(function(item) {
+        switch (item.from) {
+          case result_check[0]:
+            begin = result_check[0];
+            end = result_check[1];
+            break;
+          case result_check[1]:
+            begin = result_check[1];
+            end = result_check[0];
+            break;
+        }
+      });
+      
+      console.log(begin);
+    }
+    // Функция проверки корректности введенного маршрута
+    function check_route(towns) {
+      var kol = 0; // Кол-во городов, встречающихся нечетное кол-во раз(это должен быть город начала пути и город окончания путешествия)
+      var lateral_position = []; // Содержит крайние позиции, т.е. начальную точку отправления и конечную точку прибытия
+      var check = true; // Сообщает результат проверки. В случае корректного ввода маршрута check = true 
+      var result=[]; // Будет содержать заключение проверки и вслучае успеха два крайних города
+
+      // Проверка, что данный город в маршруте фигурирует четное число раза(кроме крайних позиций)
+      for (var i in towns) {
+        if(towns[i] % 2 === 0) {
+          continue;
+        } else {
+          if (kol < 2) {
+            lateral_position.push(i);
+            kol++;
+          } else {
+            check = false;
+          }
+        }
+      }
+      if (check) {        
+        return lateral_position;
+      } else {
+        return false;
+      }
+    }
+    </script>
+
+  </body>
+</html>
