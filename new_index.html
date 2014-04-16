@@ -79,28 +79,20 @@
             <input type="radio" name="transport" value="another">Другой вид транспорта:  
             <input type="text" placeholder="Название транспорта" id="another_transport" name="another_transport" size=25 disabled>
           </div>
+          
           <div class="form-group">
-            <input type="checkbox" name="flight" value="flight" id="flight"><label for="flight">Номер рейса: </label>
-            <input type="text" name="numb_flight" id="numb_flight" placeholder="Номер рейса" size=25 disabled>
-          </div>
-          <div class="form-group">
-            <input type="checkbox" name="seat" value="seat" id="seat"><label for="seat">Номер места: </label>
-            <input type="text" name="numb_seat" id="numb_seat" placeholder="Номер места" size=25 disabled>
-          </div>
-          <div class="form-group">
-            <input type="checkbox" name="note" value="note" id="note"><label for="note">Примечание: </label>
-            <br>
-            <textarea name="note_text" id="note_text"  rows="3" cols="38" disabled>
-            </textarea>
-          </div>
-          <div class="form-group">
-            <label>Дополнительная информация по маршруту: </label>
+            <label>Информация по маршруту: </label>
             <br><br>
             <div id="dop_info">
-
+              <div  id="group_info0">
+                <input type="text" id="property0" name="property0" placeholder="Название свойства">: 
+                <input type="text" id="value0" name="value0" placeholder="Значение">
+                <br><br>
+              </div>
             </div>
             <br>
             <input type="button" value="Добавить поле" onclick="add()">
+             <input type="button" value="Удалить поле" onclick="del()">
           </div>
           <div class="form-group">
             <input type="button" value="Ввести еще данные" onclick="save()">
@@ -114,50 +106,36 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
     <script>
-   var c = 0; // номер вновь созданного текстового поля
 
-    // Обработка событий изменнения значений radio и checkbox 
+  var c = 1; // номер вновь созданного текстового поля
+
+  // Обработка событий изменнения значений radio и checkbox 
     $(function(){
-      // Активация текстового поля для ввода названия транспорта при выборе варианта "Другой вид транспорта"
-      $('input[name=transport]:radio').change(function() {
-        if (this.value === "another") {
-          $('#another_transport').prop('disabled', false);
-        } else {
-          $('#another_transport').prop('disabled', true);
-        }
-      });      
+    // Активация текстового поля для ввода названия транспорта при выборе варианта "Другой вид транспорта"
+    $('input[name=transport]:radio').change(function() {
+      if (this.value === "another") {
+        $('#another_transport').prop('disabled', false);
+      } else {
+        $('#another_transport').prop('disabled', true);
+      }
+    }); 
+  })     
 
-      // Активация текстового поля для ввода номера рейса при выборе варианта "Номер рейса"
-      $('input[name=flight]:checkbox').change(function() {
-        if (this.checked) {
-          $('#numb_flight').prop('disabled', false);
-        } else {
-          $('#numb_flight').prop('disabled', true);
-        }
-      }); 
-
-      // Активация текстового поля для ввода номера места при выборе варианта "Номер рейса"
-      $('input[name=seat]:checkbox').change(function() {
-        if (this.checked) {
-          $('#numb_seat').prop('disabled', false);
-        } else {
-          $('#numb_seat').prop('disabled', true);
-        }
-      });
-
-      // Активация текстового поля для ввода примечания при выборе варианта "Примечание"
-      $('input[name=note]:checkbox').change(function() {
-        if (this.checked) {
-          $('#note_text').prop('disabled', false);
-        } else {
-          $('#note_text').prop('disabled', true);
-        }
-      });
-
-    });
-
+  // Функция удаления ненужных полей(вызывается при нажатии кнопки "Удалить поле")
+  function del() {
+    c--;
+    if (c > 0) {
+      $('#group_info' + c).remove();
+        
+    } else {
+      c++;
+    }
+     
+  }
+  
+  // Функция добавления поля(вызывается при нажатии кнопки "Добавить поле") 
   function add() {
-    $('#dop_info').append('<input type="text" id="property'+ c + '" name="property' + c + '" placeholder="Название свойства">: <input type="text" id="value' + c + '" name="value' + c +'" placeholder="Значение"><br><br>');
+    $('#dop_info').append('<div  id="group_info'+ c + '"><input type="text" id="property'+ c + '" name="property' + c + '" placeholder="Название свойства">: <input type="text" id="value' + c + '" name="value' + c +'" placeholder="Значение"><br><br></div>');
     c++;
 
   }
@@ -172,41 +150,39 @@
       
       var trip = {}; // Содержит текущий отрезок
       var result_check; // Содержит результат проверки
-      var flight,seat,note; // Содержат данные рейса, места и примечания соответственно
-      var dop_info = [];
       var from = document.getElementById("from").value; // Получение точки отправления
       var to = document.getElementById("to").value; // Получение точки прибытия
+      var info_route = {}; // Содержит информацию о текущем отрезке пути
+      var property=""; // Переменная для хранения промежуточного значения имени свойства
       var transport = document.form.transport.value; // Получение вида транспорта
       
-      for (var i in document.form.elements) {
-        console.log(document.form.elements[i].name);
-      }
-
       // Если выбран пункт "Другой транспорт", то считать имя транспорта из текстового поля
       if (transport === "another") {
           transport = document.getElementById("another_transport").value;
       }
 
-      // Если выбран пункт "Номер рйейса", то считать номер места из текстового поля 
-      if (document.form.flight.checked) {
-        flight = document.getElementById("numb_flight").value; 
-      } else {
-        flight = "";
+      if (transport !== "") {
+        trip["transport"] = transport;
       }
 
-      // Если выбран пункт "Номер места", то считать номер места из текстового поля 
-      if (document.form.seat.checked) {
-        seat = document.getElementById("numb_seat").value; 
-      } else {
-        seat = "";
-      }
+      // Получение div с id=dop_info
+      var div = document.getElementById("dop_info");
+      // Получение всех элементов input входящих в этот div
+      var elems = div.getElementsByTagName('input');
 
-      // Если выбран пункт "Примечание", то считать примечание из текстового поля 
-      if (document.form.note.checked) {
-        note = document.getElementById("note").value; 
-      } else {
-        note = "";
+      for(var i=0; i<elems.length; i++) {
+        if (elems[i].value !== "") {
+          property = elems[i].value;
+          i++;
+          if (elems[i].value !== "") {
+            trip[property] = elems[i].value;
+          } 
+          property = "";
+        } else {
+          i++;
+        }
       }
+      
 
       // Проверка на ввод пустого места отправления    
       if (from === "") {
@@ -220,22 +196,6 @@
         return;
       }
 
-      if (transport !== "") {
-        trip["transport"] = transport;
-      }
-
-      if (flight !== "") {
-        trip["flight"] = flight;
-      }
-
-      if (seat !== "") {
-        trip["seat"] = seat;
-      }
-
-      if (note !== "") {
-        trip["note"] = seat;
-      }
-
       trip["from"] = from;
       trip["to"] = to;
         
@@ -246,6 +206,8 @@
         return;
       }
       
+      console.log(trip);
+
       //data.push(trip); // Добавление к информации по маршруту введенного отрезка
 
       // document.getElementById("from").value="";
