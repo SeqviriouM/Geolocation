@@ -257,12 +257,15 @@
       });
 
       var goroda = [];
-    
-      goroda[0] = [data.slice(),begin]; // копируем массив, чтобы дальше обработать его функцией отрисовки маршрута
+      console.log(data);
+
+      goroda.push([data.slice(),begin]); // копируем массив, чтобы дальше обработать его функцией отрисовки маршрута
   
       result = begin + " - ";
 
-      draw_route(goroda, 0);
+      console.log(goroda[0][0]);
+
+      draw_route(goroda, true);
       
       result += final_route;
       
@@ -304,32 +307,41 @@
       var find_goroda = []; // массив городов, значение from в которых равно first
       //var result = []; // Конечное словесное описание маршрута
       var delete_index = [];
+      var length;
+
+      length = routes.length;
+
+      console.log(routes);
 
       //result[0] = "";
 
       //Условие прерывание рекурсии
-      if (change > 5) {
+      if (!change) {
         return " Конец;";
       } else {
-        for (var i = 0; i<routes.length; i++) {
+
+        change = false; 
+          
+        for (var i = 0; i<length; i++) {
 
           routes[i][0].forEach(function(item,index) {
 
             if (item.from === routes[i][1]) {
               find_goroda.push(item);
-              delete_index.push(index);
             }
           })
 
           if (find_goroda.length != 0) {
-            //change = true;
+            change = true;
           }
 
           console.log(find_goroda);
 
           otrezok = final_route[i];
 
-          help_routes = routes[0][0].splice();
+          help_routes = routes[i][0].slice();
+
+          console.log(help_routes);
 
           for (var j = 0; j < find_goroda.length; j++) {
             if (j === 0) {
@@ -339,7 +351,7 @@
 
             } else {
               routes.push([help_routes,find_goroda[j].to]);
-              routes[routes.length-1][0].splice(delete_index.shift(),1);
+              console.log(routes[routes.length-1][0].splice(delete_index.shift(),1));
               final_route.push(otrezok);
               final_route[final_route.length-1] += find_goroda[j].to + " - ";
             }
@@ -349,16 +361,12 @@
 
           console.log(final_route);
 
-          routes[0][0].splice(delete_index,1);
+          //routes[0][0].splice(delete_index,1);
 
           console.log(routes[0]);
 
 
         }
-        
-
-        change ++;
-
         
         final_route += draw_route(routes,change);
         // if (find_goroda.length === 1) {
