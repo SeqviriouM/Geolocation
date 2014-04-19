@@ -173,7 +173,7 @@
       var trip = {}; // Содержит текущий отрезок
       var result_check; // Содержит результат проверки
       var flight,seat,note; // Содержат данные рейса, места и примечания соответственно
-      var dop_info = [];
+      var dop_info = []; // Содержит дополнительную информацию 
       var from = document.getElementById("from").value; // Получение точки отправления
       var to = document.getElementById("to").value; // Получение точки прибытия
       var transport = document.form.transport.value; // Получение вида транспорта
@@ -207,6 +207,13 @@
       } else {
         note = "";
       }
+
+
+
+
+
+
+
 
       // Проверка на ввод пустого места отправления    
       if (from === "") {
