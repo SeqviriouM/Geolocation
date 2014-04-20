@@ -1,0 +1,37 @@
+body {
+        background-color: #8B00FF;
+        margin-top:150px;
+      }
+
+      .left {
+        background-color: white;
+        float:left;
+        position:relative;
+        left:50%;
+      }
+
+      .right {
+        background-color: white;
+        position:relative;
+        right:50%;
+      }
+
+      .middle {
+        background-color: white;
+        margin: 0 auto;
+        width: 550px;
+
+      } 
+
+      .form_class {
+        padding:20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .next {
+        float:right;
+        margin-right: 20px;
+      }
