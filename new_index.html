@@ -158,12 +158,12 @@
       
       var trip = {}; // Содержит текущий отрезок
       var result_check; // Содержит результат проверки
-      var from = document.getElementById("from").value; // Получение точки отправления
-      var to = document.getElementById("to").value; // Получение точки прибытия
+      var from = document.getElementById("from").value.trim(); // Получение точки отправления
+      var to = document.getElementById("to").value.trim(); // Получение точки прибытия
       var info_route = {}; // Содержит информацию о текущем отрезке пути
       var property=""; // Переменная для хранения промежуточного значения имени свойства
       var transport = document.form.transport.value; // Получение вида транспорта
-      
+
       // Если выбран пункт "Другой транспорт", то считать имя транспорта из текстового поля
       if (transport === "another") {
           transport = document.getElementById("another_transport").value;
