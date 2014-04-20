@@ -256,18 +256,19 @@
         }
       });
 
-      var goroda = [];
-      console.log(data);
-
-      goroda.push([data.slice(),begin]); // копируем массив, чтобы дальше обработать его функцией отрисовки маршрута
+      var goroda = [[]];
+      console.log(begin);
+      goroda[0].push(data.slice());
+      goroda[0].push(begin);
+      console.log(goroda.length);
+      console.log(goroda[0].length)
+      //goroda.push([data.slice(),begin]); // копируем массив, чтобы дальше обработать его функцией отрисовки маршрута
   
-      result = begin + " - ";
-
-      console.log(goroda[0][0]);
+      final_route[0] = begin + " - ";
 
       draw_route(goroda, true);
       
-      result += final_route;
+      result = final_route;
       
       console.log(result);
     }
@@ -295,6 +296,10 @@
 
       console.log(lateral_position);
 
+      if (lateral_position.length === 0) {
+        check = false;
+      }
+
       if (check) {        
         return lateral_position;
       } else {
@@ -313,8 +318,6 @@
 
       console.log(routes);
 
-      //result[0] = "";
-
       //Условие прерывание рекурсии
       if (!change) {
         return " Конец;";
@@ -324,24 +327,24 @@
           
         for (var i = 0; i<length; i++) {
 
-          routes[i][0].forEach(function(item,index) {
+          find_goroda = [];
 
+          routes[i][0].forEach(function(item,index) {
             if (item.from === routes[i][1]) {
               find_goroda.push(item);
+              delete_index.push(index);
             }
           })
 
+          // Если был найден возможный следующий город пути, то меняет значение переменной change на true
           if (find_goroda.length != 0) {
             change = true;
           }
 
-          console.log(find_goroda);
-
+          // Запоминаем текущий(пройденный уже) маршрут
           otrezok = final_route[i];
-
+          // Запоминаем текущее состояние списка городов(т.к. дальше производится удаление использованных городов)
           help_routes = routes[i][0].slice();
-
-          console.log(help_routes);
 
           for (var j = 0; j < find_goroda.length; j++) {
             if (j === 0) {
@@ -357,23 +360,10 @@
             }
           }
 
-          console.log(routes);
-
-          console.log(final_route);
-
-          //routes[0][0].splice(delete_index,1);
-
-          console.log(routes[0]);
-
-
         }
         
-        final_route += draw_route(routes,change);
-        // if (find_goroda.length === 1) {
-        //   first = find_goroda[0].to;
-        //   return result += find_goroda[0].to + " - " + draw_route(routes, first);  
-        // };
-        
+        // Вызываем повторно фунецию draw_route для определения следующего города.
+        final_route += draw_route(routes,change);        
       }
     }
     </script>
